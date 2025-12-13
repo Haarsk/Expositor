@@ -656,7 +656,7 @@
             if (e.target.checked) {
                 document.body.classList.add('dark-mode'); localStorage.setItem('theme', 'dark');
             } else {
-                document.body.classList.remove('dark-mode'); localStorage.setItem('light', 'dark');
+                document.body.classList.remove('dark-mode'); localStorage.setItem('theme', 'light');
             }
         }
         
@@ -947,6 +947,12 @@
         }
 
         init();
-    </script>
+        </script>
+    <script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/Expositor/sw.js");
+  }
+</script>
+
 </body>
 </html>
