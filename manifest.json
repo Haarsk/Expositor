@@ -2,11 +2,10 @@
   "background_color": "#ffffff",
   "dir": "ltr",
   "display": "standalone",
-  "name": "haarsk.github",
+  "name": "Expositor Pro",
   "orientation": "any",
   "scope": "/",
-  "short_name": "haarsk.github",
-  "start_url": "//Shnopia-Light-Engine/Expositor Pro V1.5isPro.html",
-  "theme_color": "#ffffff",
-  "lang": "fr"
+  "short_name": "Expositor",
+  "start_url": "/https://haarsk.github.io/Expositor/Expositor%20Pro%20V1.5isPro.html",
+  "theme_color": "#ffffff"
 }
