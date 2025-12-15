@@ -2,14 +2,10 @@
 <html lang="fr">
 <head>
     <link rel="manifest" href="/Expositor/manifest.webmanifest">
-    <meta charset="UTF-8">
-    
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#ffffff">
 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Expositor Pro: Exposure & Cinema</title>
     <style>
         :root {
@@ -606,6 +602,10 @@
                 modePhotoBtn.classList.add('active');
             }
 
+            // Déclenche la vérification d'achat au démarrage. 
+            // La fonction checkPurchases() gère la logique d'affichage/masquage/isPro.
+            checkPurchases(); 
+
             // THEME
             const currentTheme = localStorage.getItem('theme');
             if (currentTheme) {
@@ -613,10 +613,6 @@
                 toggleSwitch.checked = currentTheme === 'dark';
             }
             toggleSwitch.addEventListener('change', switchTheme, false);
-
-            // CORRECTION: FORCAGE GRATUIT ET APPEL
-            setIsPro(false);
-            checkPurchases(); 
 
             calculate();
         }
@@ -669,16 +665,15 @@
         
         // Fonction unique pour mettre à jour l'état et redessiner l'UI
         function setIsPro(newValue) {
-            // LIGNE DE BLOCAGE SUPPRIMÉE (Correction)
+            if (isPro === newValue) return; 
+            
             isPro = newValue;
             
             // LOGIQUE D'AFFICHAGE/MASQUAGE DES CONTRÔLES
             if (!isPro) {
                 // Masquer les contrôles avancés
-                const ndGroup = document.querySelector('#ndScroller').closest('.control-group');
-                const evGroup = document.querySelector('#evCompScroller').closest('.control-group');
-                if(ndGroup) ndGroup.classList.add('hidden');
-                if(evGroup) evGroup.classList.add('hidden');
+                document.querySelector('#ndScroller').closest('.control-group').classList.add('hidden');
+                document.querySelector('#evCompScroller').closest('.control-group').classList.add('hidden');
                 
                 // Masquer le contrôle FILM si la liste des films est restreinte
                 const filmControlGroup = document.querySelector('#filmScroller').closest('.control-group');
@@ -688,7 +683,7 @@
                         if (index > 1) item.classList.add('hidden');
                     });
                     // On masque le groupe complet si on ne laisse que le premier élément (Numérique)
-                    if (filmStocks.length > 1) { 
+                    if (filmStocks.length > 1) { // Si > 1, il y a au moins Numérique et un autre, donc on masque les autres
                          filmControlGroup.classList.add('hidden');
                     }
                 }
@@ -696,24 +691,21 @@
                 // Afficher le bouton PRO et TOUJOURS afficher la signature
                 if (proButton && signatureDisplay) {
                      proButton.classList.remove('hidden');
-                     signatureDisplay.classList.remove('hidden'); 
+                     signatureDisplay.classList.remove('hidden'); // NE JAMAIS MASQUER LA SIGNATURE
                 }
             } else {
                  // Afficher les contrôles avancés
-                const ndGroup = document.querySelector('#ndScroller').closest('.control-group');
-                const evGroup = document.querySelector('#evCompScroller').closest('.control-group');
-                if(ndGroup) ndGroup.classList.remove('hidden');
-                if(evGroup) evGroup.classList.remove('hidden');
+                document.querySelector('#ndScroller').closest('.control-group').classList.remove('hidden');
+                document.querySelector('#evCompScroller').closest('.control-group').classList.remove('hidden');
                 // Afficher le contrôle FILM
-                const filmControlGroup = document.querySelector('#filmScroller').closest('.control-group');
-                if(filmControlGroup) filmControlGroup.classList.remove('hidden');
+                document.querySelector('#filmScroller').closest('.control-group').classList.remove('hidden');
                 // Afficher tous les choix de films
                 filmScroller.querySelectorAll('.scroll-item').forEach(item => item.classList.remove('hidden'));
                 
                 // Masquer le bouton PRO et TOUJOURS afficher la signature
                 if (proButton && signatureDisplay) {
                     proButton.classList.add('hidden');
-                    signatureDisplay.classList.remove('hidden');
+                    signatureDisplay.classList.remove('hidden'); // NE JAMAIS MASQUER LA SIGNATURE
                 }
             }
             
@@ -723,7 +715,7 @@
             }
             
             // Mise à jour du Mode Hint et Recalcul
-            if(modeHint) modeHint.innerText = isPro ? (currentMode === 'photo' ? 'Mode Photo : couples ƒ/ – vitesse' : 'Mode Cinéma : Ouverture requise (T-Stop)') : 'Version Gratuite • Mode Photo';
+            modeHint.innerText = isPro ? (currentMode === 'photo' ? 'Mode Photo : couples ƒ/ – vitesse' : 'Mode Cinéma : Ouverture requise (T-Stop)') : 'Version Gratuite • Mode Photo';
             calculate(); 
         }
         
@@ -732,7 +724,10 @@
             let isProUser = false;
             
             if (!('getDigitalGoodsService' in window)) {
+                // FALLBACK : Pas dans une TWA ou navigateur non supporté. 
+                // C'est le cas pour les tests en local.
                 console.warn("L'API Digital Goods n'est pas disponible. Mode Gratuit actif.");
+                // isProUser reste FALSE (Gratuit) par défaut
             } else {
                 try {
                     // 1. Obtenir le service Play Billing
@@ -747,6 +742,7 @@
                     
                 } catch (error) {
                     console.error("Erreur lors de la vérification des achats Play Billing:", error);
+                    // En cas d'erreur de communication, on reste en mode Gratuit par défaut
                     isProUser = false;
                 }
             }
@@ -772,6 +768,7 @@
                 if (!service) throw new Error("Service Play Billing non trouvé.");
 
                 // 1. Demander l'achat
+                // Cela ouvre la fenêtre de paiement native de Google Play
                 const purchaseResult = await service.purchase({ itemId: PRO_PRODUCT_ID });
                 
                 // 2. Si l'achat est réussi
@@ -779,11 +776,13 @@
                     alert('Félicitations ! Expositor Pro est débloqué.');
                     setIsPro(true);
                 } else {
+                    // L'achat peut échouer sans lancer d'exception (ex: paiement refusé)
                     alert('Achat non finalisé ou paiement refusé.');
                 }
                 
             } catch (error) {
                 if (error.name === 'AbortError') {
+                    // L'utilisateur a annulé l'achat
                     alert('Achat annulé.');
                 } else {
                     console.error("Erreur lors de l'achat Play Billing:", error);
@@ -792,13 +791,19 @@
             }
         }
         
+        // --- GESTION DU PAYWALL (Ancienne fonction simplifiée pour réutilisation) ---
         function checkProFeature(featureName) {
             if (isPro) {
                 return true;
             }
             alert(`Fonctionnalité PRO uniquement. Veuillez passer en PRO pour accéder à : ${featureName}`);
+            // Pas besoin d'appeler setMode('photo') ici car il est déjà géré par setMode() au-dessus
             return false;
         }
+
+        // --- CALCUL OPTIQUE (DoF) ---
+
+        // --- CALCUL OPTIQUE (DoF) ---
 
         // --- CALCUL OPTIQUE (DoF) ---
         function calculateDoF(fStop) {
@@ -833,6 +838,7 @@
                 filmIndex = 0; // Force sur "Numérique" (sans facteur de réciprocité)
             }
 
+            // Utilise les variables contrôlées (`ndStops`, `evOffset`) pour le calcul
             const evAdjusted = currentEvBase + Math.log2(currentIso / 100) - ndStops - evOffset;
             
             let evText = `EV ${Math.round(evAdjusted*10)/10}`;
@@ -941,12 +947,12 @@
         }
 
         init();
-    </script>
+        </script>
     <script>
-    if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("/Expositor/sw.js");
-    }
-    </script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/Expositor/sw.js");
+  }
+</script>
 
 </body>
 </html>
