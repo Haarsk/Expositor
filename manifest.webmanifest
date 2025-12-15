@@ -1,21 +1,15 @@
 {
   "id": "/Expositor/",
   "name": "Expositor Pro",
-    "display": "standalone",
-    "theme_color": "#ffffff",
-    "background_color": "#ffffff",
   "short_name": "Expositor",
   "description": "Calculateur d’exposition professionnel pour la photo et le cinéma.",
   "lang": "fr-FR",
-
   "start_url": "/Expositor/",
   "scope": "/Expositor/",
-
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
-
   "icons": [
     {
       "src": "/Expositor/icon-192.png",
@@ -36,7 +30,6 @@
       "purpose": "maskable"
     }
   ],
-
   "categories": ["photo", "productivity", "utilities"],
   "prefer_related_applications": false
 }
