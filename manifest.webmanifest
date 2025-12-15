@@ -1,35 +1,14 @@
 {
-  "id": "/Expositor/",
   "name": "Expositor Pro",
   "short_name": "Expositor",
-  "description": "Calculateur d’exposition professionnel pour la photo et le cinéma.",
-  "lang": "fr-FR",
+  "description": "Calculateur d'exposition Photo & Cinéma",
   "start_url": "/Expositor/",
   "scope": "/Expositor/",
   "display": "standalone",
-  "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
   "icons": [
-    {
-      "src": "/Expositor/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/Expositor/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/Expositor/icon-maskable.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
-  ],
-  "categories": ["photo", "productivity", "utilities"],
-  "prefer_related_applications": false
+    { "src": "/Expositor/icon.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/Expositor/icon.png", "sizes": "512x512", "type": "image/png" }
+  ]
 }
