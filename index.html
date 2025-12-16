@@ -132,7 +132,7 @@
 
         /* --- CONTROLS --- */
         .control-group {
-            background: var(--bg-card); border-radius: 20px; padding: 15px 0;
+            background: var(--bg-card); border-radius: 20px; padding: 10px 0;
             box-shadow: var(--shadow); overflow: hidden;
         }
         .label-header {
@@ -177,9 +177,15 @@
 
         /* --- SCROLLERS --- */
         .scroller {
-            display: flex; overflow-x: auto; gap: 12px; padding: 0 20px;
-            scroll-behavior: smooth; -ms-overflow-style: none; scrollbar-width: none;
-        }
+    display: flex; 
+    overflow-x: auto; 
+    gap: 12px; 
+    /* On ajoute 10px en haut et en bas pour laisser la place au scale(1.05) et à l'ombre */
+    padding: 10px 20px; 
+    scroll-behavior: smooth; 
+    -ms-overflow-style: none; 
+    scrollbar-width: none;
+}
         .scroller::-webkit-scrollbar { display: none; }
 
         .scroll-item {
@@ -671,7 +677,7 @@
         
         // Fonction unique pour mettre à jour l'état et redessiner l'UI
         function setIsPro(newValue) {
-            if (isPro === newValue) return; 
+            // La ligne de sécurité a été supprimée pour forcer la mise à jour au démarrage
             
             isPro = newValue;
             
