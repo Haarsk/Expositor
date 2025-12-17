@@ -1,3 +1,4 @@
+// Force Update
 const CACHE = "expositor-v1";
 const ASSETS = [
   "/Expositor/",
